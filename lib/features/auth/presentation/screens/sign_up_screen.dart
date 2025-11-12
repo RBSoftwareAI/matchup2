@@ -104,19 +104,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() => _isLoading = false);
 
     if (mounted) {
+      // Navigate to home screen after successful registration
+      context.go('/home');
+      
+      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Inscription réussie (mock)'),
+          content: Text('Bienvenue sur MatchUp ! 🎉'),
           backgroundColor: AppColors.success,
+          duration: Duration(seconds: 2),
         ),
       );
-      
-      // Navigate to sign in after successful registration
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) {
-          context.go('/signin');
-        }
-      });
     }
   }
 

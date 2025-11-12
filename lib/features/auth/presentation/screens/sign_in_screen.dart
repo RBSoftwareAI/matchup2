@@ -75,10 +75,15 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() => _isLoading = false);
 
     if (mounted) {
+      // Navigate to home screen
+      context.go('/home');
+      
+      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Connexion réussie (mock)'),
+          content: Text('Connexion réussie !'),
           backgroundColor: AppColors.success,
+          duration: Duration(seconds: 2),
         ),
       );
     }
