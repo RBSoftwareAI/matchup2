@@ -14,10 +14,10 @@ MatchUp est une application Flutter moderne qui analyse vos préférences et vou
 - Écran d'inscription avec validation complète
 - Redirection automatique vers l'écran d'accueil après connexion
 
-### ✅ Navigation Principale (v1.1 - Sur `base`)
+### ✅ Navigation Principale (v1.2 - Sur `base`)
 - Bottom navigation à 4 onglets : Accueil, Matchs, Chat, Profil
 - Navigation fluide avec GoRouter
-- 8 routes configurées
+- 13 routes configurées
 
 ### ✅ Écran d'Accueil (v1.1)
 - **Deck swipable** avec 30 profils variés
@@ -33,6 +33,20 @@ MatchUp est une application Flutter moderne qui analyse vos préférences et vou
 - **Compteur de profils** restants
 - **Feedback visuel** pour chaque action
 
+### ✅ Écran Matchs (v1.2) ⭐ NOUVEAU
+- **TabBar locale** avec 2 onglets :
+  - **"Demandes"** : Liste des demandes de match reçues (8 demandes mock)
+  - **"Confirmés"** : Liste des matches confirmés
+- **Carte de demande** avec :
+  - Photo du profil
+  - Nom, Âge, Métier
+  - Distance (en km)
+  - **Actions** :
+    - Bouton "Refuser" (X rouge) - Retire la demande avec SnackBar
+    - Bouton "Accepter" (cœur) - Crée une conversation automatiquement
+- **États vides** avec illustrations et messages
+- **Intégration Chat** : Accepter une demande crée automatiquement une conversation
+
 ### ✅ Chat (v1.1)
 - **Liste de conversations** avec :
   - Avatars des utilisateurs
@@ -46,14 +60,54 @@ MatchUp est une application Flutter moderne qui analyse vos préférences et vou
   - Champ de saisie avec bouton envoyer
   - Envoi en temps réel (mock)
 
-### 🚧 En Développement
-- Écran Matchs (placeholder)
-- Écran Profil (placeholder)
+### ✅ Écran Profil (v1.2) ⭐ NOUVEAU
+- **En-tête** :
+  - Avatar circulaire (photo principale)
+  - Icône de modification photo (SnackBar mock)
+  - Nom, Âge, Ville, Pays
+  - Bouton "Modifier le profil"
+- **Carte "Informations"** :
+  - Bio (multiligne)
+  - Métier / Entreprise
+  - Éducation
+  - Taille (en cm)
+- **Carte "Photos"** :
+  - Grille 3 colonnes (6-8 photos mock)
+  - Bouton "Ajouter des photos" (mock)
+- **Carte "Centres d'intérêt"** :
+  - Chips stylisés (8 intérêts max)
+- **Carte "Préférences"** (lecture seule) :
+  - Genres préférés
+  - Tranche d'âge
+  - Distance maximale
+- **Section "Paramètres & plus"** :
+  - Navigation vers 6 pages de paramètres
+- **Bouton Déconnexion** avec dialog de confirmation
+
+### ✅ Édition de Profil (v1.2) ⭐ NOUVEAU
+- **Écran complet** (HORS bottom navigation)
+- **AppBar** avec titre et bouton "Enregistrer"
+- **Formulaire** :
+  - Photo de profil avec bouton "Changer la photo"
+  - Champs : Nom, Bio (max 500 caractères), Métier, Entreprise, Éducation
+  - Ville, Pays, Taille (cm, input numérique)
+- **Centres d'intérêt** :
+  - Sélection/déselection par chips
+  - 16 intérêts disponibles
+- **Sauvegarde** : SnackBar "Profil mis à jour (mock)" + retour automatique
+
+### ✅ Pages de Paramètres (v1.2) ⭐ NOUVEAU
+5 pages de paramètres (placeholders prêts pour développement) :
+- **Confidentialité** (`/privacy`)
+- **Notifications** (`/notifications-settings`)
+- **Compte & sécurité** (`/account`)
+- **Aide** (`/help`)
+- **Mentions légales** (`/legal`)
 
 ## 🌿 Gestion des Branches
 
 - **`main`** : Branche de production (code stable v1.0 - authentification uniquement)
-- **`base`** : Branche de développement (v1.1 - navigation principale + accueil + chat)
+- **`base`** : Branche de développement (v1.2 - navigation + accueil + matchs + chat + profil complets)
 - **`feature/*`** : Branches temporaires pour le développement de fonctionnalités
 
 ## 🏗️ Architecture
@@ -62,9 +116,9 @@ Le projet suit l'architecture **Clean Architecture** avec une séparation claire
 
 ```
 lib/
-├── main.dart                          # Point d'entrée avec Provider
+├── main.dart                          # Point d'entrée avec 3 Providers
 ├── config/
-│   ├── routes/app_router.dart        # 8 routes avec bottom nav
+│   ├── routes/app_router.dart        # 13 routes avec bottom nav
 │   └── theme/app_theme.dart          # Thème Material 3
 ├── core/constants/
 │   ├── colors.dart                   # Palette complète
@@ -88,8 +142,18 @@ lib/
 │   │           ├── profile_card.dart  # Carte de profil
 │   │           ├── swipe_buttons.dart # Boutons d'action
 │   │           └── profile_deck.dart  # Deck swipable
-│   ├── matches/                      # Matchs
-│   │   └── presentation/screens/     # MatchesScreen (placeholder)
+│   ├── matches/                      # Matchs ⭐ NOUVEAU
+│   │   ├── data/
+│   │   │   └── mock_matches.dart     # 8 demandes mock
+│   │   ├── domain/models/
+│   │   │   └── match_request.dart    # Modèle MatchRequest
+│   │   └── presentation/
+│   │       ├── providers/
+│   │       │   └── matches_provider.dart # State management
+│   │       ├── screens/
+│   │       │   └── matches_screen.dart  # TabBar Demandes/Confirmés
+│   │       └── widgets/
+│   │           └── match_request_card.dart # Carte de demande
 │   ├── chat/                         # Chat
 │   │   ├── domain/models/
 │   │   │   └── message.dart          # Modèles Message & Conversation
@@ -100,8 +164,30 @@ lib/
 │   │       └── widgets/
 │   │           ├── chat_bubble.dart
 │   │           └── conversation_card.dart
-│   └── profile/                      # Profil utilisateur
-│       └── presentation/screens/     # ProfileScreen (placeholder)
+│   ├── profile/                      # Profil utilisateur ⭐ NOUVEAU
+│   │   ├── data/
+│   │   │   └── mock_user.dart        # Profil utilisateur mock
+│   │   ├── domain/models/
+│   │   │   ├── user_profile.dart     # Modèle UserProfile
+│   │   │   └── user_preferences.dart # Modèle UserPreferences
+│   │   └── presentation/
+│   │       ├── providers/
+│   │       │   └── profile_provider.dart # State management
+│   │       ├── screens/
+│   │       │   ├── profile_screen.dart   # Affichage complet
+│   │       │   └── edit_profile_screen.dart # Édition
+│   │       └── widgets/
+│   │           ├── profile_header.dart    # En-tête
+│   │           ├── profile_info_card.dart # Carte info
+│   │           ├── photo_grid.dart        # Grille photos
+│   │           └── interest_chip.dart     # Chip intérêt
+│   └── settings/                     # Paramètres ⭐ NOUVEAU
+│       └── presentation/screens/
+│           ├── privacy_screen.dart
+│           ├── notifications_settings_screen.dart
+│           ├── account_screen.dart
+│           ├── help_screen.dart
+│           └── legal_screen.dart
 └── shared/widgets/
     └── custom_bottom_nav.dart        # Bottom navigation
 ```
@@ -114,10 +200,11 @@ lib/
 - **Background**: `#FFF5F2` (Beige/rose pâle)
 - **Card Background**: `#FFFFFF` (Blanc)
 - **Text Primary**: `#1F2937` (Gris très foncé)
+- **Text Secondary**: `#374151` (Gris foncé)
 - **Text Muted**: `#6B7280` (Gris moyen)
 
 ### Design System
-- **Border Radius**: 24px
+- **Border Radius**: 24px (général), 16px (cartes), 12px (petits éléments)
 - **Title Font Weight**: Semi-gras (600)
 - **Transitions**: 150ms slide animations
 
@@ -125,7 +212,7 @@ lib/
 
 - **Framework**: Flutter 3.35.4
 - **Dart**: 3.9.2
-- **Navigation**: GoRouter 14.6.2
+- **Navigation**: GoRouter 14.8.1
 - **State Management**: Provider 6.1.5
 - **UI Components**: 
   - flutter_card_swiper 7.0.1
@@ -144,7 +231,7 @@ cd matchup2
 
 2. **Choisir la branche**
 ```bash
-# Pour développement actif (v1.1 - recommandé)
+# Pour développement actif (v1.2 - recommandé)
 git checkout base
 
 # Pour version stable (v1.0 - authentification uniquement)
@@ -220,8 +307,12 @@ dart format .
 - Compteur de profils restants
 - État vide avec message
 
-### 5. Matches Screen (`/matches`)
-Écran de matchs (placeholder)
+### 5. Matches Screen (`/matches`) ⭐ NOUVEAU
+Écran de matchs avec TabBar :
+- **Onglet "Demandes"** : 8 demandes de match avec actions Accepter/Refuser
+- **Onglet "Confirmés"** : Liste des matches confirmés avec accès au chat
+- États vides avec illustrations
+- Intégration automatique avec le chat
 
 ### 6. Chat List Screen (`/chat`) ⭐
 Liste des conversations avec :
@@ -238,8 +329,26 @@ Conversation individuelle avec :
 - Champ de saisie
 - Envoi en temps réel (mock)
 
-### 8. Profile Screen (`/profile`)
-Écran de profil (placeholder)
+### 8. Profile Screen (`/profile`) ⭐ NOUVEAU
+Écran de profil complet avec :
+- En-tête (avatar, nom, âge, localisation)
+- Sections : Informations, Photos, Centres d'intérêt, Préférences
+- Navigation vers paramètres
+- Bouton déconnexion
+
+### 9. Edit Profile Screen (`/edit-profile`) ⭐ NOUVEAU
+Écran d'édition de profil :
+- Formulaire complet
+- Modification photo (mock)
+- Gestion des centres d'intérêt
+- Sauvegarde avec feedback
+
+### 10-14. Settings Screens ⭐ NOUVEAU
+- `/privacy` - Confidentialité
+- `/notifications-settings` - Notifications
+- `/account` - Compte & sécurité
+- `/help` - Aide
+- `/legal` - Mentions légales
 
 ## 🔧 Configuration
 
@@ -249,10 +358,16 @@ Les routes sont configurées dans `lib/config/routes/app_router.dart` :
 - `/signin` - Écran de connexion
 - `/signup` - Écran d'inscription
 - `/home` - Écran d'accueil avec deck swipable
-- `/matches` - Écran de matchs
+- `/matches` - Écran de matchs avec TabBar
 - `/chat` - Liste de conversations
 - `/chat/:userId` - Conversation détaillée
 - `/profile` - Profil utilisateur
+- `/edit-profile` - Édition de profil
+- `/privacy` - Confidentialité
+- `/notifications-settings` - Notifications
+- `/account` - Compte & sécurité
+- `/help` - Aide
+- `/legal` - Mentions légales
 
 ### Thème
 Le thème global est défini dans `lib/config/theme/app_theme.dart` avec :
@@ -277,9 +392,9 @@ Le thème global est défini dans `lib/config/theme/app_theme.dart` avec :
    - Exemple : `test@test.com` / `password`
 4. Explorez les 4 onglets :
    - **Accueil** : Swipez les profils, testez les filtres
-   - **Matchs** : Écran en développement
+   - **Matchs** : Acceptez/Refusez des demandes, consultez les matches confirmés
    - **Chat** : Ouvrez une conversation et envoyez des messages
-   - **Profil** : Écran en développement
+   - **Profil** : Consultez et modifiez votre profil, explorez les paramètres
 
 ## 🚧 Prochaines Étapes (Phase 3)
 
@@ -287,12 +402,13 @@ Le thème global est défini dans `lib/config/theme/app_theme.dart` avec :
 - [ ] Intégration Firebase Authentication
 - [ ] Firebase Firestore pour les profils
 - [ ] Firebase Storage pour les photos
-- [ ] Écran de création/édition de profil complet
-- [ ] Upload de photos utilisateur
+- [ ] Upload de photos utilisateur réel
+- [ ] Paramètres de confidentialité fonctionnels
+- [ ] Paramètres de notifications fonctionnels
 
 ### Priorité Moyenne
-- [ ] Écran Matchs avec logique de matching
 - [ ] Algorithme IA de recommandation avancé
+- [ ] Matching en temps réel
 - [ ] Chat en temps réel avec Firestore
 - [ ] Notifications push
 - [ ] Tests unitaires et d'intégration
@@ -309,6 +425,19 @@ Pour plus de détails sur l'architecture et le développement :
 - **AI_QUICK_START.md** : Guide rapide pour les sessions IA
 - **CONTEXT.md** : Documentation technique complète
 
+## 📊 Statistiques du Projet
+
+- **Lignes de code** : ~12,000+ lignes
+- **Fichiers Dart** : 40+ fichiers
+- **Modèles de données** : 6 modèles
+- **Providers** : 3 providers (Home, Matches, Profile)
+- **Routes** : 13 routes configurées
+- **Widgets réutilisables** : 15+ widgets
+- **Données mock** : 
+  - 30 profils
+  - 8 demandes de match
+  - 1 profil utilisateur complet
+
 ## 📄 License
 
 Propriétaire - RBSoftwareAI
@@ -319,5 +448,5 @@ Développé avec ❤️ par l'équipe RBSoftwareAI
 
 ---
 
-**Version actuelle** : v1.1 (branche `base`)  
-**Dernière mise à jour** : Session 2 - Navigation principale et écran d'accueil
+**Version actuelle** : v1.2 (branche `base`)  
+**Dernière mise à jour** : Session 3 - Écrans Matchs et Profil complets
