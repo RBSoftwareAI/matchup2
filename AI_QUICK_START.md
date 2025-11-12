@@ -4,18 +4,23 @@ Guide rapide pour reprendre le développement de MatchUp lors de la prochaine se
 
 ## 📊 État Actuel du Projet
 
-### ✅ Complété (Version Stable sur `main`)
+### ✅ Complété (Sur branche `base`)
 - Architecture Clean mise en place
 - Configuration GoRouter avec navigation fluide
 - Thème personnalisé avec charte graphique MatchUp
 - 3 écrans d'authentification fonctionnels (Start, SignIn, SignUp)
-- Widgets réutilisables (CustomButton, CustomTextField, AuthFooter)
+- **Navigation principale à 4 onglets (Accueil, Matchs, Chat, Profil)**
+- **Écran Accueil avec deck swipable de profils**
+- **Système de filtrage (Tout, Recommandés, New)**
+- **Gestion d'état avec Provider**
+- **Chat fonctionnel (liste + conversation)**
+- Widgets réutilisables (CustomButton, CustomTextField, AuthFooter, ProfileCard, SwipeButtons)
 - Validations de formulaire en temps réel
 - Design responsive et cohérent
 
 ### 🎯 Version Actuelle: 1.0.0+1
-**Branche de production**: `main` (code stable et testé)  
-**Branche de développement**: `base` (développement actif)  
+**Branche de production**: `main` (code stable d'origine)  
+**Branche de développement**: `base` (nouvelles fonctionnalités implémentées)  
 **Repository**: https://github.com/RBSoftwareAI/matchup2
 
 ### 🌿 Workflow Git
@@ -27,19 +32,34 @@ Guide rapide pour reprendre le développement de MatchUp lors de la prochaine se
 
 ```
 lib/
-├── main.dart                          # MaterialApp.router avec GoRouter
+├── main.dart                          # MaterialApp.router avec Provider
 ├── config/
-│   ├── routes/app_router.dart        # 3 routes: /start, /signin, /signup
+│   ├── routes/app_router.dart        # 8 routes avec bottom nav
 │   └── theme/app_theme.dart          # Thème Material 3 personnalisé
 ├── core/constants/
 │   ├── colors.dart                   # Palette complète (#FF3B3B primary)
 │   └── text_styles.dart              # 8+ styles de texte
-├── features/auth/
-│   ├── presentation/
-│   │   ├── screens/                  # 3 écrans (Start, SignIn, SignUp)
-│   │   └── widgets/                  # 3 widgets (Button, TextField, Footer)
-│   └── domain/                       # Vide (prêt pour logique métier)
-└── shared/widgets/                   # Vide (prêt pour widgets globaux)
+├── features/
+│   ├── auth/
+│   │   └── presentation/             # 3 écrans auth (Start, SignIn, SignUp)
+│   ├── home/
+│   │   ├── data/mock_profiles.dart   # 30 profils mock
+│   │   ├── domain/models/profile.dart
+│   │   └── presentation/
+│   │       ├── providers/home_provider.dart
+│   │       ├── screens/home_screen.dart
+│   │       └── widgets/              # ProfileCard, SwipeButtons, ProfileDeck
+│   ├── matches/
+│   │   └── presentation/screens/     # MatchesScreen (placeholder)
+│   ├── chat/
+│   │   ├── domain/models/message.dart
+│   │   └── presentation/
+│   │       ├── screens/              # ChatListScreen, ChatDetailScreen
+│   │       └── widgets/              # ChatBubble, ConversationCard
+│   └── profile/
+│       └── presentation/screens/     # ProfileScreen (placeholder)
+└── shared/widgets/
+    └── custom_bottom_nav.dart        # Bottom navigation bar
 ```
 
 ## 🎨 Charte Graphique (À Respecter Strictement)
@@ -133,32 +153,48 @@ git push origin main
 
 ## 🔄 Prochaines Étapes Suggérées
 
-### Phase 2 (Priorité Haute)
-1. **Firebase Integration**
+### Phase 2 (Priorité Haute) - EN COURS ✅
+1. **Navigation principale** ✅
+   - Bottom navigation à 4 onglets
+   - Routes configurées avec GoRouter
+   
+2. **Écran Accueil** ✅
+   - Deck swipable avec 30 profils mock
+   - 3 filtres (Tout, Recommandés, New)
+   - Actions swipe (like, dislike, super like)
+   
+3. **Chat** ✅
+   - Liste de conversations
+   - Écran de conversation
+   - Envoi de messages mock
+
+4. **State Management** ✅
+   - Provider intégré
+   - HomeProvider pour gestion d'état
+
+### Phase 3 (Priorité Haute - À FAIRE)
+5. **Firebase Integration**
    - Ajouter Firebase Auth
    - Créer services d'authentification
    - Implémenter login/signup réels
-   
-2. **State Management**
-   - Intégrer Provider ou Riverpod
-   - Créer AuthProvider
-   - Gérer l'état utilisateur global
+   - Persister les profils dans Firestore
 
-3. **Profil Utilisateur**
-   - Écran de création de profil
+6. **Profil Utilisateur**
+   - Écran de création/édition de profil
    - Upload de photos
    - Définition des préférences
+   - Gestion des intérêts
 
-### Phase 3 (Priorité Moyenne)
-4. **Matching Algorithm**
+### Phase 4 (Priorité Moyenne)
+7. **Matching Algorithm Réel**
    - Intégration API IA
-   - Écran de découverte
-   - Système de swipe/like
+   - Système de recommandation avancé
+   - Gestion des matches
 
-5. **Chat & Messages**
-   - Liste des matches
-   - Chat en temps réel (Firebase Realtime DB)
+8. **Chat Temps Réel**
+   - Firebase Realtime Database
    - Notifications push
+   - Indicateurs de lecture
 
 ## 🐛 Problèmes Connus
 
@@ -171,7 +207,12 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  go_router: ^14.8.1
+  go_router: ^14.6.2
+  provider: 6.1.5
+  flutter_card_swiper: ^7.0.1
+  cached_network_image: ^3.4.1
+  flutter_svg: ^2.0.10+1
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
@@ -209,5 +250,5 @@ dev_dependencies:
 
 ---
 
-**Dernière mise à jour**: Session 1 - Création de la base du projet  
-**Prochaine session**: Intégration Firebase Authentication
+**Dernière mise à jour**: Session 2 - Navigation principale et écran d'accueil  
+**Prochaine session**: Intégration Firebase (Auth + Firestore) et complétion des écrans Matches/Profile
