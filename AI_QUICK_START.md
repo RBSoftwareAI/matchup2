@@ -14,7 +14,12 @@ Guide rapide pour reprendre le développement de MatchUp lors de la prochaine se
 - **Système de filtrage (Tout, Recommandés, New)**
 - **Gestion d'état avec Provider**
 - **Chat fonctionnel (liste + conversation)**
-- Widgets réutilisables (CustomButton, CustomTextField, AuthFooter, ProfileCard, SwipeButtons)
+- **Écran Matchs complet avec TabBar (Demandes/Confirmés)**
+- **Actions Accepter/Refuser sur demandes de match**
+- **Écran Profil complet avec toutes les sections**
+- **Édition de profil fonctionnelle**
+- **Pages de paramètres (Confidentialité, Notifications, Compte, Aide, Légal)**
+- Widgets réutilisables (CustomButton, CustomTextField, AuthFooter, ProfileCard, SwipeButtons, MatchRequestCard, InterestChip, etc.)
 - Validations de formulaire en temps réel
 - Design responsive et cohérent
 
@@ -32,9 +37,9 @@ Guide rapide pour reprendre le développement de MatchUp lors de la prochaine se
 
 ```
 lib/
-├── main.dart                          # MaterialApp.router avec Provider
+├── main.dart                          # MaterialApp.router avec 3 Providers
 ├── config/
-│   ├── routes/app_router.dart        # 8 routes avec bottom nav
+│   ├── routes/app_router.dart        # 13 routes complètes
 │   └── theme/app_theme.dart          # Thème Material 3 personnalisé
 ├── core/constants/
 │   ├── colors.dart                   # Palette complète (#FF3B3B primary)
@@ -50,14 +55,26 @@ lib/
 │   │       ├── screens/home_screen.dart
 │   │       └── widgets/              # ProfileCard, SwipeButtons, ProfileDeck
 │   ├── matches/
-│   │   └── presentation/screens/     # MatchesScreen (placeholder)
+│   │   ├── data/mock_matches.dart    # 8 demandes mock
+│   │   ├── domain/models/match_request.dart
+│   │   └── presentation/
+│   │       ├── providers/matches_provider.dart
+│   │       ├── screens/matches_screen.dart  # TabBar Demandes/Confirmés
+│   │       └── widgets/match_request_card.dart
 │   ├── chat/
 │   │   ├── domain/models/message.dart
 │   │   └── presentation/
 │   │       ├── screens/              # ChatListScreen, ChatDetailScreen
 │   │       └── widgets/              # ChatBubble, ConversationCard
-│   └── profile/
-│       └── presentation/screens/     # ProfileScreen (placeholder)
+│   ├── profile/
+│   │   ├── data/mock_user.dart       # Profil utilisateur mock
+│   │   ├── domain/models/            # user_profile.dart, user_preferences.dart
+│   │   └── presentation/
+│   │       ├── providers/profile_provider.dart
+│   │       ├── screens/              # ProfileScreen, EditProfileScreen
+│   │       └── widgets/              # ProfileHeader, PhotoGrid, InterestChip...
+│   └── settings/
+│       └── presentation/screens/     # Privacy, Notifications, Account, Help, Legal
 └── shared/widgets/
     └── custom_bottom_nav.dart        # Bottom navigation bar
 ```
@@ -153,10 +170,10 @@ git push origin main
 
 ## 🔄 Prochaines Étapes Suggérées
 
-### Phase 2 (Priorité Haute) - EN COURS ✅
+### Phase 2 (Priorité Haute) - COMPLÉTÉ ✅
 1. **Navigation principale** ✅
    - Bottom navigation à 4 onglets
-   - Routes configurées avec GoRouter
+   - Routes configurées avec GoRouter (13 routes)
    
 2. **Écran Accueil** ✅
    - Deck swipable avec 30 profils mock
@@ -168,30 +185,48 @@ git push origin main
    - Écran de conversation
    - Envoi de messages mock
 
-4. **State Management** ✅
-   - Provider intégré
-   - HomeProvider pour gestion d'état
+4. **Écran Matchs** ✅
+   - TabBar avec "Demandes" et "Confirmés"
+   - 8 demandes de match mock
+   - Actions Accepter/Refuser fonctionnelles
+   - Création automatique de conversation lors de l'acceptation
+
+5. **Écran Profil** ✅
+   - Affichage complet du profil utilisateur
+   - Sections: Informations, Photos, Centres d'intérêt, Préférences
+   - Navigation vers paramètres
+
+6. **Édition de Profil** ✅
+   - Formulaire complet d'édition
+   - Modification de tous les champs
+   - Gestion des centres d'intérêt
+
+7. **Pages de Paramètres** ✅
+   - Confidentialité, Notifications, Compte, Aide, Mentions légales
+
+8. **State Management** ✅
+   - 3 Providers (Home, Matches, Profile)
+   - Gestion d'état complète
 
 ### Phase 3 (Priorité Haute - À FAIRE)
-5. **Firebase Integration**
+9. **Firebase Integration**
    - Ajouter Firebase Auth
    - Créer services d'authentification
    - Implémenter login/signup réels
    - Persister les profils dans Firestore
 
-6. **Profil Utilisateur**
-   - Écran de création/édition de profil
-   - Upload de photos
-   - Définition des préférences
-   - Gestion des intérêts
+10. **Profil Utilisateur - Amélioration**
+   - Upload de photos réel (actuellement mock)
+   - Définition des préférences avancées
+   - Paramètres de confidentialité fonctionnels
 
 ### Phase 4 (Priorité Moyenne)
-7. **Matching Algorithm Réel**
+11. **Matching Algorithm Réel**
    - Intégration API IA
    - Système de recommandation avancé
    - Gestion des matches
 
-8. **Chat Temps Réel**
+12. **Chat Temps Réel**
    - Firebase Realtime Database
    - Notifications push
    - Indicateurs de lecture
@@ -250,5 +285,5 @@ dev_dependencies:
 
 ---
 
-**Dernière mise à jour**: Session 2 - Navigation principale et écran d'accueil  
-**Prochaine session**: Intégration Firebase (Auth + Firestore) et complétion des écrans Matches/Profile
+**Dernière mise à jour**: Session 3 - Écrans Matchs et Profil complets  
+**Prochaine session**: Intégration Firebase (Auth + Firestore) pour fonctionnalités réelles

@@ -8,6 +8,12 @@ import '../../features/matches/presentation/screens/matches_screen.dart';
 import '../../features/chat/presentation/screens/chat_list_screen.dart';
 import '../../features/chat/presentation/screens/chat_detail_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/profile/presentation/screens/edit_profile_screen.dart';
+import '../../features/settings/presentation/screens/privacy_screen.dart';
+import '../../features/settings/presentation/screens/notifications_settings_screen.dart';
+import '../../features/settings/presentation/screens/account_screen.dart';
+import '../../features/settings/presentation/screens/help_screen.dart';
+import '../../features/settings/presentation/screens/legal_screen.dart';
 import '../../shared/widgets/custom_bottom_nav.dart';
 
 /// App router configuration using GoRouter
@@ -98,6 +104,61 @@ class AppRouter {
           context,
           state,
           const _MainScaffold(currentIndex: 3, child: ProfileScreen()),
+        ),
+      ),
+      // Profile and Settings routes (without bottom nav)
+      GoRoute(
+        path: '/edit-profile',
+        name: 'editProfile',
+        pageBuilder: (context, state) => _buildPageWithSlideTransition(
+          context,
+          state,
+          const EditProfileScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/privacy',
+        name: 'privacy',
+        pageBuilder: (context, state) => _buildPageWithSlideTransition(
+          context,
+          state,
+          const PrivacyScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/notifications-settings',
+        name: 'notificationsSettings',
+        pageBuilder: (context, state) => _buildPageWithSlideTransition(
+          context,
+          state,
+          const NotificationsSettingsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/account',
+        name: 'account',
+        pageBuilder: (context, state) => _buildPageWithSlideTransition(
+          context,
+          state,
+          const AccountScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/help',
+        name: 'help',
+        pageBuilder: (context, state) => _buildPageWithSlideTransition(
+          context,
+          state,
+          const HelpScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/legal',
+        name: 'legal',
+        pageBuilder: (context, state) => _buildPageWithSlideTransition(
+          context,
+          state,
+          const LegalScreen(),
         ),
       ),
     ],
