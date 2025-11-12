@@ -8,12 +8,18 @@ MatchUp est une application Flutter moderne qui analyse vos préférences et vou
 
 ## 📱 Fonctionnalités Actuelles
 
-### Authentification (v1.0 - Branche `base`)
+### Authentification (v1.0 - Stable sur `main`)
 - ✅ Écran de démarrage avec présentation de l'app
 - ✅ Écran de connexion avec validation email/password
 - ✅ Écran d'inscription avec validation complète
 - ✅ Navigation fluide avec GoRouter
 - ✅ Design cohérent suivant la charte graphique MatchUp
+
+## 🌿 Gestion des Branches
+
+- **`main`** : Branche de production (code stable et testé uniquement)
+- **`base`** : Branche de développement (développement actif, nouvelles features)
+- **`feature/*`** : Branches temporaires pour le développement de fonctionnalités
 
 ## 🏗️ Architecture
 
@@ -76,15 +82,23 @@ lib/
 ```bash
 git clone https://github.com/RBSoftwareAI/matchup2.git
 cd matchup2
-git checkout base
 ```
 
-2. **Installer les dépendances**
+2. **Choisir la branche**
+```bash
+# Pour développement actif
+git checkout base
+
+# Pour version stable (production)
+git checkout main
+```
+
+3. **Installer les dépendances**
 ```bash
 flutter pub get
 ```
 
-3. **Lancer l'application**
+4. **Lancer l'application**
 ```bash
 flutter run
 ```

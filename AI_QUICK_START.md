@@ -4,7 +4,7 @@ Guide rapide pour reprendre le développement de MatchUp lors de la prochaine se
 
 ## 📊 État Actuel du Projet
 
-### ✅ Complété (Branche `base`)
+### ✅ Complété (Version Stable sur `main`)
 - Architecture Clean mise en place
 - Configuration GoRouter avec navigation fluide
 - Thème personnalisé avec charte graphique MatchUp
@@ -14,8 +14,14 @@ Guide rapide pour reprendre le développement de MatchUp lors de la prochaine se
 - Design responsive et cohérent
 
 ### 🎯 Version Actuelle: 1.0.0+1
-**Branche**: `base`  
+**Branche de production**: `main` (code stable et testé)  
+**Branche de développement**: `base` (développement actif)  
 **Repository**: https://github.com/RBSoftwareAI/matchup2
+
+### 🌿 Workflow Git
+- **`main`**: Branche de production (code stable uniquement)
+- **`base`**: Branche de développement (travail en cours)
+- **`feature/*`**: Branches pour nouvelles fonctionnalités
 
 ## 🏗️ Architecture Actuelle
 
@@ -77,16 +83,33 @@ cd build/web && python3 ../../web_server.py
 
 ### Git Workflow
 ```bash
-# Vérifier la branche actuelle
-git branch
+# Clone et setup
+git clone https://github.com/RBSoftwareAI/matchup2.git
+cd matchup2
+git checkout base  # Basculer sur la branche de développement
 
-# Créer une nouvelle branche pour une feature
-git checkout -b feature/nom-feature
-
-# Commiter les changements
+# Développement quotidien (sur base)
+git checkout base
+git pull origin base
+# ... faire vos modifications ...
 git add .
 git commit -m "feat: description claire"
+git push origin base
+
+# Pour une nouvelle fonctionnalité
+git checkout base
+git checkout -b feature/nom-feature
+# ... développer la feature ...
+git add .
+git commit -m "feat: description de la feature"
 git push origin feature/nom-feature
+# Puis créer une Pull Request vers base
+
+# Déploiement en production
+# Une fois le code testé sur base, merger vers main
+git checkout main
+git merge base
+git push origin main
 ```
 
 ## 🔍 Points d'Attention
