@@ -101,20 +101,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // Simulate API call
     await Future.delayed(const Duration(seconds: 2));
 
-    setState(() => _isLoading = false);
-
     if (mounted) {
+      setState(() => _isLoading = false);
+      
       // Navigate to home screen after successful registration
       context.go('/home');
-      
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Bienvenue sur MatchUp ! 🎉'),
-          backgroundColor: AppColors.success,
-          duration: Duration(seconds: 2),
-        ),
-      );
     }
   }
 
