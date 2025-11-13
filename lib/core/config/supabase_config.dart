@@ -15,16 +15,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseConfig {
   // Supabase credentials
-  // TODO: Replace with your actual Supabase project credentials
-  // Get them from: https://app.supabase.com/project/_/settings/api
+  // Loaded from .env file or environment variables
+  // Project: matchup
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: 'YOUR_SUPABASE_URL',
+    defaultValue: 'https://kiwdwzukmmswiemiozcl.supabase.co',
   );
 
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: 'YOUR_SUPABASE_ANON_KEY',
+    defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpd2R3enVrbW1zd2llbWlvemNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMTMwNDIsImV4cCI6MjA3ODU4OTA0Mn0.90S0wlEKAcDwoF5RAnwrcX3XZevnp811BHC9DQEG178',
   );
 
   /// Initialize Supabase
