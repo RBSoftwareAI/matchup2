@@ -101,22 +101,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // Simulate API call
     await Future.delayed(const Duration(seconds: 2));
 
-    setState(() => _isLoading = false);
-
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Inscription réussie (mock)'),
-          backgroundColor: AppColors.success,
-        ),
-      );
+      setState(() => _isLoading = false);
       
-      // Navigate to sign in after successful registration
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) {
-          context.go('/signin');
-        }
-      });
+      // Navigate to home screen after successful registration
+      context.go('/home');
     }
   }
 

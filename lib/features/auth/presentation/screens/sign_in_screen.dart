@@ -72,15 +72,11 @@ class _SignInScreenState extends State<SignInScreen> {
     // Simulate API call
     await Future.delayed(const Duration(seconds: 2));
 
-    setState(() => _isLoading = false);
-
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Connexion réussie (mock)'),
-          backgroundColor: AppColors.success,
-        ),
-      );
+      setState(() => _isLoading = false);
+      
+      // Navigate to home screen immediately
+      context.go('/home');
     }
   }
 

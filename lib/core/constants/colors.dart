@@ -12,6 +12,7 @@ class AppColors {
   
   // Text colors
   static const Color textPrimary = Color(0xFF1F2937);
+  static const Color textSecondary = Color(0xFF374151);
   static const Color textMuted = Color(0xFF6B7280);
   
   // Utility colors
