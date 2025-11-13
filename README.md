@@ -119,7 +119,24 @@ flutter doctor
 flutter analyze
 ```
 
-5. **Lancer l'application**
+5. **Configuration Supabase** (Optionnel pour développement, requis pour production)
+
+Créer un fichier `.env` à la racine du projet :
+
+```bash
+cp .env.example .env
+```
+
+Puis remplir avec vos credentials Supabase :
+
+```env
+SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+> 📚 **Guide complet** : Voir [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) pour la configuration détaillée
+
+6. **Lancer l'application**
 
 **Mode Web (Développement)**
 ```bash
@@ -140,6 +157,53 @@ flutter run
 
 ---
 
+## 🗄️ Configuration Supabase
+
+MatchUp utilise **Supabase** comme backend pour :
+- 🔐 **Authentification** : Gestion sécurisée des comptes utilisateurs
+- 💾 **Base de données** : PostgreSQL avec Row Level Security (RLS)
+- 📁 **Storage** : Stockage des photos de profil et galeries
+- ⚡ **Real-time** : Messagerie instantanée avec WebSockets
+
+### Quick Start
+
+1. **Créer un projet Supabase** sur [app.supabase.com](https://app.supabase.com)
+
+2. **Exécuter le schema SQL** :
+   - Ouvrir SQL Editor dans Supabase
+   - Copier le contenu de `supabase_schema.sql`
+   - Exécuter le script
+
+3. **Configurer Storage** :
+   - Créer le bucket `matchUp` (public)
+   - Appliquer les politiques Storage (voir documentation)
+
+4. **Mettre à jour les credentials** :
+   - Créer `.env` avec vos URL et anon key
+   - Ou mettre à jour `lib/core/config/supabase_config.dart`
+
+### Variables d'environnement
+
+| Variable | Description | Exemple |
+|----------|-------------|---------|
+| `SUPABASE_URL` | URL du projet Supabase | `https://xxx.supabase.co` |
+| `SUPABASE_ANON_KEY` | Clé publique anonyme | `eyJhbGciOiJIUzI1N...` |
+
+> ⚠️ **Important** : Ne jamais committer `.env` dans Git ! Le fichier est déjà dans `.gitignore`.
+
+### Architecture Database
+
+```
+users (profils) → gallery (photos)
+              → interest (centres d'intérêt)
+              → matches (likes/matchs)
+              → message (chat)
+```
+
+**📖 Documentation complète** : [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md)
+
+---
+
 ## 🏗️ Architecture
 
 Le projet suit l'architecture **Clean Architecture** pour garantir la maintenabilité et l'évolutivité.
@@ -151,7 +215,9 @@ lib/
 │   ├── routes/app_router.dart        # Configuration GoRouter (17 routes)
 │   └── theme/app_theme.dart          # Thème Material 3 personnalisé
 ├── core/
-│   └── constants/                    # Couleurs, styles de texte
+│   ├── config/                       # Configuration (Supabase)
+│   ├── constants/                    # Couleurs, styles de texte
+│   └── services/                     # Services backend (Auth, User, Match, Message, Storage)
 ├── features/                         # Fonctionnalités par domaine
 │   ├── auth/                         # Authentification
 │   ├── home/                         # Découverte de profils
@@ -209,6 +275,7 @@ TextMuted:      #6B7280  // Gris moyen pour texte secondaire
 
 | Package | Version | Usage |
 |---------|---------|-------|
+| `supabase_flutter` | ^2.3.4 | Backend complet (Auth, DB, Storage, Real-time) |
 | `go_router` | ^14.6.2 | Navigation déclarative |
 | `provider` | 6.1.5 | Gestion d'état |
 | `flutter_card_swiper` | ^7.0.1 | Deck de profils swipable |

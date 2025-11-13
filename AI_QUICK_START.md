@@ -23,10 +23,11 @@ Guide rapide pour reprendre le développement de MatchUp lors de la prochaine se
 - Validations de formulaire en temps réel
 - Design responsive et cohérent
 
-### 🎯 Version Actuelle: 1.3.0+1
+### 🎯 Version Actuelle: 1.4.0+1
 **Branche de production**: `main` (code stable d'origine)  
 **Branche de développement**: `base` (nouvelles fonctionnalités implémentées)  
 **Repository**: https://github.com/RBSoftwareAI/matchup2
+**Backend**: Supabase (PostgreSQL + Auth + Storage + Real-time)
 
 ### 🌿 Workflow Git
 - **`main`**: Branche de production (code stable uniquement)
@@ -41,9 +42,18 @@ lib/
 ├── config/
 │   ├── routes/app_router.dart        # 13 routes complètes
 │   └── theme/app_theme.dart          # Thème Material 3 personnalisé
-├── core/constants/
-│   ├── colors.dart                   # Palette complète (#FF3B3B primary)
-│   └── text_styles.dart              # 8+ styles de texte
+├── core/
+│   ├── config/
+│   │   └── supabase_config.dart     # Configuration Supabase
+│   ├── constants/
+│   │   ├── colors.dart               # Palette complète (#FF3B3B primary)
+│   │   └── text_styles.dart          # 8+ styles de texte
+│   └── services/                     # Services backend Supabase
+│       ├── auth_service.dart         # Authentification
+│       ├── user_service.dart         # Gestion profils
+│       ├── match_service.dart        # Matching
+│       ├── message_service.dart      # Messagerie
+│       └── storage_service.dart      # Upload photos
 ├── features/
 │   ├── auth/
 │   │   └── presentation/             # 3 écrans auth (Start, SignIn, SignUp)
@@ -211,12 +221,14 @@ git push origin main
    - 3 Providers (Home, Matches, Profile)
    - Gestion d'état complète
 
-### Phase 3 (Priorité Haute - À FAIRE)
-9. **Firebase Integration**
-   - Ajouter Firebase Auth
-   - Créer services d'authentification
-   - Implémenter login/signup réels
-   - Persister les profils dans Firestore
+### Phase 3 (Priorité Haute - EN COURS ⚡)
+9. **✅ Infrastructure Supabase Complète**
+   - ✅ Script SQL avec 5 tables + RLS + Triggers
+   - ✅ Configuration Flutter avec services
+   - ✅ Services: Auth, User, Match, Message, Storage
+   - ✅ Documentation complète (SUPABASE_SETUP.md)
+   - 🔜 Intégration dans les écrans existants
+   - 🔜 Migration des données mock vers Supabase
 
 10. **Profil Utilisateur - Amélioration**
    - Upload de photos réel (actuellement mock)
@@ -245,11 +257,20 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  
+  # Backend
+  supabase_flutter: ^2.3.4         # 🔥 NEW - Backend complet
+  
+  # Navigation & State
   go_router: ^14.6.2
   provider: 6.1.5
+  
+  # UI Components
   flutter_card_swiper: ^7.0.1
   cached_network_image: ^3.4.1
   flutter_svg: ^2.0.10+1
+  
+  # Utilities
   intl: ^0.19.0
 
 dev_dependencies:
@@ -268,10 +289,15 @@ dev_dependencies:
 ## 💡 Tips pour la Prochaine Session
 
 1. **Toujours commencer par**: `flutter pub get && flutter analyze`
-2. **Respecter l'architecture Clean**: Nouvelle feature = nouveau dossier dans `features/`
-3. **Widgets réutilisables**: Placer dans `features/X/presentation/widgets/` si spécifique, sinon `shared/widgets/`
-4. **Tests**: Créer un test pour chaque nouvelle fonctionnalité critique
-5. **Navigation**: Ajouter les nouvelles routes dans `app_router.dart`
+2. **Supabase Setup**: 
+   - Lire `docs/SUPABASE_SETUP.md` pour configuration complète
+   - Créer `.env` avec credentials (voir `.env.example`)
+   - Scripts SQL dans `supabase_schema.sql` (création) et `supabase_rollback.sql` (suppression)
+3. **Respecter l'architecture Clean**: Nouvelle feature = nouveau dossier dans `features/`
+4. **Services disponibles**: `AuthService`, `UserService`, `MatchService`, `MessageService`, `StorageService` dans `lib/core/services/`
+5. **Widgets réutilisables**: Placer dans `features/X/presentation/widgets/` si spécifique, sinon `shared/widgets/`
+6. **Tests**: Créer un test pour chaque nouvelle fonctionnalité critique
+7. **Navigation**: Ajouter les nouvelles routes dans `app_router.dart`
 
 ## 📞 Contexte Projet
 
@@ -286,7 +312,62 @@ dev_dependencies:
 - [Material Design 3](https://m3.material.io/)
 - [Firebase Flutter Setup](https://firebase.google.com/docs/flutter/setup)
 
+## 🗄️ Supabase - Quick Reference
+
+### Configuration Initiale
+```bash
+# 1. Créer .env avec credentials
+cp .env.example .env
+
+# 2. Dans Supabase Dashboard: SQL Editor
+# Copier/coller supabase_schema.sql et exécuter
+
+# 3. Storage: Créer bucket "matchUp" (public)
+```
+
+### Services Disponibles
+
+```dart
+// AuthService - Authentification
+final authService = AuthService();
+await authService.signUp(email: '...', password: '...');
+await authService.signIn(email: '...', password: '...');
+final user = authService.currentUser;
+
+// UserService - Profils
+final userService = UserService();
+await userService.getUserProfile(userId);
+await userService.updateUserProfile(userId, data);
+final users = await userService.searchUsers(gender: 'female', city: 'Paris');
+
+// MatchService - Matching
+final matchService = MatchService();
+await matchService.sendMatchRequest(targetUserId);
+await matchService.acceptMatchRequest(matchId);
+final matches = await matchService.getConfirmedMatches();
+
+// MessageService - Chat
+final messageService = MessageService();
+await messageService.sendMessage(recipientId: '...', message: '...');
+final messages = await messageService.getMessages(otherUserId);
+final stream = messageService.subscribeToMessages(otherUserId); // Real-time
+
+// StorageService - Upload
+final storageService = StorageService();
+final url = await storageService.uploadProfilePicture(userId: '...', file: file);
+```
+
+### Base de Données
+
+**Tables** : users, gallery, interest, matches, message  
+**RLS** : Activé sur toutes les tables  
+**Triggers** : updated_at automatique  
+**Indexes** : 20+ pour optimisation  
+**Seed Data** : 15 utilisateurs + données relationnelles
+
+📖 **Documentation complète** : `docs/SUPABASE_SETUP.md`
+
 ---
 
-**Dernière mise à jour**: Session 4 - Pages de paramètres complètes et interactives  
-**Prochaine session**: Intégration Firebase (Auth + Firestore) pour fonctionnalités réelles
+**Dernière mise à jour**: Session 5 - Infrastructure Supabase complète  
+**Prochaine session**: Intégration Supabase dans les écrans existants (Auth, Profils, Matchs, Chat)

@@ -388,34 +388,42 @@ dev_dependencies:
   flutter_lints: ^5.0.0   # Linting rules
 ```
 
-### Planifiées Phase 2
+### Installées Phase 3 ✅
 
 ```yaml
 dependencies:
+  # Backend - Supabase (✅ NOUVEAU)
+  supabase_flutter: ^2.3.4   # PostgreSQL + Auth + Storage + Real-time
+  
   # State Management
-  provider: ^6.1.5        # ou riverpod: ^2.5.1
+  provider: 6.1.5              # ✅ Installé
   
-  # Firebase
-  firebase_core: ^3.6.0
-  firebase_auth: ^5.3.1
-  cloud_firestore: ^5.4.3
-  firebase_storage: ^12.3.2
+  # Navigation
+  go_router: ^14.6.2           # ✅ Installé
   
-  # Networking
-  http: ^1.2.2
-  dio: ^5.7.0             # Alternative HTTP client
+  # UI Components
+  flutter_card_swiper: ^7.0.1  # ✅ Installé
+  cached_network_image: ^3.4.1 # ✅ Installé
+  flutter_svg: ^2.0.10+1       # ✅ Installé
+  
+  # Utilities
+  intl: ^0.19.0                # ✅ Installé
+```
+
+### À Ajouter Phase 4
+
+```yaml
+dependencies:
+  # Image handling
+  image_picker: ^1.1.2
+  image_cropper: ^5.0.1
   
   # Local Storage
   shared_preferences: ^2.5.3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   
-  # UI
-  cached_network_image: ^3.4.1
-  image_picker: ^1.1.2
-  
   # Utilities
-  intl: ^0.19.0           # Internationalization
   equatable: ^2.0.7       # Value equality
 ```
 
@@ -538,15 +546,19 @@ final _privateVariable = '';
 - [x] Widgets ProfileCard, SwipeButtons, ProfileDeck, MatchRequestCard, InterestChip
 - [x] Modèles Profile, Message, MatchRequest, UserProfile, UserPreferences
 
-### Phase 3: Firebase Integration (Priorité 1 - À FAIRE)
-- [ ] Firebase setup
-- [ ] Firebase Auth integration
-- [ ] AuthRepository implementation
-- [ ] Sign in/Sign up use cases réels
-- [ ] Error handling
-- [ ] Loading states
-- [ ] Firestore pour profils
-- [ ] Upload photos Firebase Storage
+### Phase 3: Supabase Integration (Priorité 1 - EN COURS ⚡)
+- [x] **Infrastructure Supabase**
+  - [x] Script SQL complet (5 tables + RLS + Triggers + Indexes)
+  - [x] Script de rollback
+  - [x] Configuration Flutter (supabase_config.dart)
+  - [x] Services backend (Auth, User, Match, Message, Storage)
+  - [x] Documentation complète (SUPABASE_SETUP.md)
+- [ ] **Intégration dans l'app**
+  - [ ] Authentification réelle (SignIn/SignUp)
+  - [ ] Profils utilisateurs dans DB
+  - [ ] Matching avec Supabase
+  - [ ] Chat temps réel
+  - [ ] Upload photos Storage
 
 ### Phase 4: User Profile (Priorité 2)
 - [ ] Profile model étendu
@@ -669,8 +681,58 @@ chore: Maintenance
 - [Flutter Widget Catalog](https://docs.flutter.dev/ui/widgets)
 - [Tinder UI/UX Analysis](https://uxdesign.cc/)
 
+## 🗄️ Backend - Supabase
+
+### Architecture
+
+MatchUp utilise **Supabase** comme backend complet :
+
+- **PostgreSQL** : Base de données relationnelle avec Row Level Security (RLS)
+- **Authentication** : Gestion sécurisée des comptes utilisateurs
+- **Storage** : Stockage des photos (bucket `matchUp`)
+- **Real-time** : WebSockets pour chat instantané
+
+### Tables Database
+
+```
+users (profils utilisateurs)
+  ├── gallery (photos galerie, max 6)
+  ├── interest (centres d'intérêt)
+  ├── matches (demandes de match + confirmés)
+  └── message (messagerie entre matchs)
+```
+
+### Services Disponibles
+
+**Localisation** : `lib/core/services/`
+
+| Service | Fichier | Fonctionnalités |
+|---------|---------|-----------------|
+| AuthService | `auth_service.dart` | Sign up, sign in, sign out, reset password |
+| UserService | `user_service.dart` | CRUD profils, search users, gallery, interests |
+| MatchService | `match_service.dart` | Send/accept/reject matches, get confirmed |
+| MessageService | `message_service.dart` | Send messages, real-time chat, conversations |
+| StorageService | `storage_service.dart` | Upload/delete photos, get URLs |
+
+### Configuration
+
+**Fichiers** :
+- `supabase_schema.sql` : Création complète DB (tables, RLS, triggers, indexes, seed)
+- `supabase_rollback.sql` : Suppression complète (rollback)
+- `.env.example` : Template credentials
+- `lib/core/config/supabase_config.dart` : Configuration Flutter
+
+**Documentation** : `docs/SUPABASE_SETUP.md` (guide complet)
+
+### Sécurité
+
+- **Row Level Security (RLS)** : Activé sur toutes les tables
+- **Politiques** : 23 politiques pour contrôle d'accès granulaire
+- **Triggers** : updated_at automatique sur toutes les tables
+- **Indexes** : 20+ indexes pour optimisation des requêtes
+
 ---
 
 **Document créé**: Session 1  
-**Dernière mise à jour**: Session 3 (Écrans Matchs et Profil complets)  
+**Dernière mise à jour**: Session 5 (Infrastructure Supabase complète)  
 **Maintenu par**: RBSoftwareAI Team
