@@ -23,7 +23,7 @@ Guide rapide pour reprendre le développement de MatchUp lors de la prochaine se
 - Validations de formulaire en temps réel
 - Design responsive et cohérent
 
-### 🎯 Version Actuelle: 1.0.0+1
+### 🎯 Version Actuelle: 1.3.0+1
 **Branche de production**: `main` (code stable d'origine)  
 **Branche de développement**: `base` (nouvelles fonctionnalités implémentées)  
 **Repository**: https://github.com/RBSoftwareAI/matchup2
@@ -74,7 +74,10 @@ lib/
 │   │       ├── screens/              # ProfileScreen, EditProfileScreen
 │   │       └── widgets/              # ProfileHeader, PhotoGrid, InterestChip...
 │   └── settings/
-│       └── presentation/screens/     # Privacy, Notifications, Account, Help, Legal
+│       └── presentation/
+│           ├── providers/settings_provider.dart
+│           ├── screens/              # 9 écrans (5 principaux + 4 documents légaux)
+│           └── widgets/              # 4 widgets réutilisables
 └── shared/widgets/
     └── custom_bottom_nav.dart        # Bottom navigation bar
 ```
@@ -285,5 +288,5 @@ dev_dependencies:
 
 ---
 
-**Dernière mise à jour**: Session 3 - Écrans Matchs et Profil complets  
+**Dernière mise à jour**: Session 4 - Pages de paramètres complètes et interactives  
 **Prochaine session**: Intégration Firebase (Auth + Firestore) pour fonctionnalités réelles

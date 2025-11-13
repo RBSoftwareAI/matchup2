@@ -5,6 +5,7 @@ import 'config/theme/app_theme.dart';
 import 'features/home/presentation/providers/home_provider.dart';
 import 'features/matches/presentation/providers/matches_provider.dart';
 import 'features/profile/presentation/providers/profile_provider.dart';
+import 'features/settings/presentation/providers/settings_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => HomeProvider()),
         ChangeNotifierProvider(create: (_) => MatchesProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
       child: MaterialApp.router(
         title: 'MatchUp',

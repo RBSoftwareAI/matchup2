@@ -14,6 +14,10 @@ import '../../features/settings/presentation/screens/notifications_settings_scre
 import '../../features/settings/presentation/screens/account_screen.dart';
 import '../../features/settings/presentation/screens/help_screen.dart';
 import '../../features/settings/presentation/screens/legal_screen.dart';
+import '../../features/settings/presentation/screens/terms_of_service_screen.dart';
+import '../../features/settings/presentation/screens/privacy_policy_screen.dart';
+import '../../features/settings/presentation/screens/cookie_policy_screen.dart';
+import '../../features/settings/presentation/screens/community_guidelines_screen.dart';
 import '../../shared/widgets/custom_bottom_nav.dart';
 
 /// App router configuration using GoRouter
@@ -159,6 +163,43 @@ class AppRouter {
           context,
           state,
           const LegalScreen(),
+        ),
+      ),
+      // Legal Documents routes
+      GoRoute(
+        path: '/terms-of-service',
+        name: 'termsOfService',
+        pageBuilder: (context, state) => _buildPageWithSlideTransition(
+          context,
+          state,
+          const TermsOfServiceScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/privacy-policy',
+        name: 'privacyPolicy',
+        pageBuilder: (context, state) => _buildPageWithSlideTransition(
+          context,
+          state,
+          const PrivacyPolicyScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/cookie-policy',
+        name: 'cookiePolicy',
+        pageBuilder: (context, state) => _buildPageWithSlideTransition(
+          context,
+          state,
+          const CookiePolicyScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/community-guidelines',
+        name: 'communityGuidelines',
+        pageBuilder: (context, state) => _buildPageWithSlideTransition(
+          context,
+          state,
+          const CommunityGuidelinesScreen(),
         ),
       ),
     ],
