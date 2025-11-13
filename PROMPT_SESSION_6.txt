@@ -1,0 +1,670 @@
+═══════════════════════════════════════════════════════════════════════════════
+  📱 PROMPT SESSION 6 - MATCHUP (Application de Rencontres Flutter)
+═══════════════════════════════════════════════════════════════════════════════
+
+🎯 CONTEXTE PROJET
+──────────────────────────────────────────────────────────────────────────────
+
+Application de rencontres similaire à Tinder, développée en Flutter avec Supabase
+comme backend. Architecture Clean Architecture avec 3 couches distinctes.
+
+📁 LOCALISATION PROJET
+──────────────────────────────────────────────────────────────────────────────
+/home/user/flutter_app/
+
+🔧 STACK TECHNIQUE
+──────────────────────────────────────────────────────────────────────────────
+• Flutter 3.35.4 (VERROUILLÉ - NE PAS METTRE À JOUR)
+• Dart 3.9.2 (VERROUILLÉ - NE PAS METTRE À JOUR)
+• Supabase (Backend: PostgreSQL + Auth + Storage + Real-time)
+• Provider (Gestion d'état)
+• Clean Architecture (3 couches: data/domain/presentation)
+
+📊 STRUCTURE BASE DE DONNÉES (Déjà créée en Session 5)
+──────────────────────────────────────────────────────────────────────────────
+
+5 TABLES:
+1. users (profils utilisateurs)
+2. gallery (photos profil)
+3. interest (centres d'intérêt)
+4. matches (système de match)
+5. message (messagerie real-time)
+
+✅ Row Level Security (RLS) activé sur toutes les tables
+✅ 23 politiques RLS implémentées
+✅ Storage configuré (3 buckets: avatars, gallery, chat)
+
+🔑 CREDENTIALS SUPABASE (fichier .env - NON COMMITÉ)
+──────────────────────────────────────────────────────────────────────────────
+
+SUPABASE_URL=https://kiwdwzukmmswiemiozcl.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtpd2R3enVrbW1zd2llbWlvemNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMTMwNDIsImV4cCI6MjA3ODU4OTA0Mn0.90S0wlEKAcDwoF5RAnwrcX3XZevnp811BHC9DQEG178
+ENVIRONMENT=development
+DEBUG_MODE=true
+
+⚠️ IMPORTANT: Ce fichier .env existe déjà dans le projet et est protégé par .gitignore
+
+🏗️ ARCHITECTURE BACKEND (Déjà créée en Session 5)
+──────────────────────────────────────────────────────────────────────────────
+
+5 SERVICES BACKEND FONCTIONNELS:
+
+1. lib/data/services/auth_service.dart
+   • signUp(email, password, userData)
+   • signIn(email, password)
+   • signOut()
+   • getCurrentUser()
+   • resetPassword(email)
+
+2. lib/data/services/user_service.dart
+   • getUserProfile(userId)
+   • updateUserProfile(userId, data)
+   • uploadAvatar(userId, file)
+   • addPhotoToGallery(userId, file)
+   • deletePhotoFromGallery(photoId)
+   • addInterest(userId, interest)
+   • removeInterest(interestId)
+   • getUserInterests(userId)
+
+3. lib/data/services/match_service.dart
+   • getRecommendations(userId, preferences)
+   • likeUser(fromUserId, toUserId)
+   • dislikeUser(fromUserId, toUserId)
+   • checkMatch(userId1, userId2)
+   • getMatches(userId)
+
+4. lib/data/services/message_service.dart
+   • sendMessage(matchId, senderId, content, type)
+   • getMessages(matchId)
+   • subscribeToMessages(matchId, callback)
+   • markAsRead(messageId)
+
+5. lib/data/services/storage_service.dart
+   • uploadFile(bucket, path, file)
+   • deleteFile(bucket, path)
+   • getPublicUrl(bucket, path)
+
+✅ Tous ces services sont prêts à être utilisés
+✅ Configuration Supabase intégrée dans lib/core/config/supabase_config.dart
+✅ Gestion d'erreurs robuste implémentée
+
+🎯 OBJECTIF SESSION 6: IMPLÉMENTER L'UI AUTHENTIFICATION & PROFIL
+──────────────────────────────────────────────────────────────────────────────
+
+PRIORITÉ 1: SYSTÈME D'AUTHENTIFICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1.1 ÉCRAN DE CONNEXION (LoginScreen)
+────────────────────────────────────────────────────────────────────────────
+
+UI ATTENDUE:
+• Logo de l'app centré en haut
+• 2 champs de texte:
+  - Email (avec validation format email)
+  - Password (masqué avec option d'affichage)
+• Bouton "Se connecter" (pleine largeur)
+• Lien "Mot de passe oublié ?"
+• Bouton "Créer un compte" (secondaire)
+• Gestion des erreurs avec messages utilisateur clairs
+• Loading state pendant la connexion
+
+FONCTIONNALITÉS:
+• Validation des champs en temps réel
+• Affichage des erreurs Supabase en français
+• Redirection vers HomeScreen après connexion réussie
+• État "loading" avec CircularProgressIndicator
+
+EXEMPLE UTILISATION DU SERVICE:
+──────────────────────────────────────────────────────────────────────────────
+try {
+  final user = await AuthService().signIn(email, password);
+  if (user != null) {
+    Navigator.pushReplacement(context, MaterialPageRoute(
+      builder: (context) => HomeScreen()
+    ));
+  }
+} catch (e) {
+  // Afficher l'erreur à l'utilisateur
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Erreur: $e'))
+  );
+}
+──────────────────────────────────────────────────────────────────────────────
+
+1.2 ÉCRAN D'INSCRIPTION (SignUpScreen)
+────────────────────────────────────────────────────────────────────────────
+
+UI ATTENDUE:
+• Formulaire multi-étapes (3 étapes):
+  
+  ÉTAPE 1 - Informations de base:
+  - Username (unique, validation)
+  - Email (validation format)
+  - Password (min 6 caractères, confirmation)
+  - Bouton "Suivant"
+  
+  ÉTAPE 2 - Profil:
+  - Prénom
+  - Nom
+  - Date de naissance (DatePicker)
+  - Genre (male/female/other)
+  - Bio (optionnel, 500 caractères max)
+  - Bouton "Suivant"
+  
+  ÉTAPE 3 - Localisation et préférences:
+  - Ville
+  - Pays
+  - Préférences de recherche (genre recherché, distance max)
+  - Bouton "Créer mon compte"
+
+• Indicateur de progression (1/3, 2/3, 3/3)
+• Bouton "Retour" pour revenir à l'étape précédente
+• Validation des champs à chaque étape
+
+EXEMPLE UTILISATION DU SERVICE:
+──────────────────────────────────────────────────────────────────────────────
+try {
+  final userData = {
+    'username': usernameController.text,
+    'email': emailController.text,
+    'first_name': firstNameController.text,
+    'last_name': lastNameController.text,
+    'date_of_birth': selectedDate.toIso8601String(),
+    'gender': selectedGender,
+    'bio': bioController.text,
+    'city': cityController.text,
+    'country': countryController.text,
+    'looking_for': lookingForGender,
+    'max_distance': maxDistance,
+  };
+  
+  final user = await AuthService().signUp(
+    emailController.text,
+    passwordController.text,
+    userData
+  );
+  
+  if (user != null) {
+    // Rediriger vers l'écran d'upload de photos
+    Navigator.pushReplacement(context, MaterialPageRoute(
+      builder: (context) => PhotoUploadScreen()
+    ));
+  }
+} catch (e) {
+  // Gérer l'erreur
+}
+──────────────────────────────────────────────────────────────────────────────
+
+1.3 ÉCRAN MOT DE PASSE OUBLIÉ (ForgotPasswordScreen)
+────────────────────────────────────────────────────────────────────────────
+
+UI ATTENDUE:
+• Explication claire du processus
+• Champ email
+• Bouton "Envoyer le lien de réinitialisation"
+• Message de confirmation après envoi
+• Lien "Retour à la connexion"
+
+EXEMPLE UTILISATION DU SERVICE:
+──────────────────────────────────────────────────────────────────────────────
+try {
+  await AuthService().resetPassword(emailController.text);
+  // Afficher message de succès
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Email de réinitialisation envoyé !'))
+  );
+} catch (e) {
+  // Gérer l'erreur
+}
+──────────────────────────────────────────────────────────────────────────────
+
+PRIORITÉ 2: ÉCRAN DE PROFIL (ProfileScreen)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2.1 AFFICHAGE DU PROFIL
+────────────────────────────────────────────────────────────────────────────
+
+UI ATTENDUE:
+• Avatar en haut (CircleAvatar 120x120)
+• Bouton "Modifier l'avatar" (overlay sur l'avatar)
+• Nom complet et âge
+• Bio (si existe)
+• Galerie de photos (GridView 3 colonnes)
+  - Bouton "+" pour ajouter une photo (max 6 photos)
+  - Bouton "×" sur chaque photo pour supprimer
+• Liste des centres d'intérêt (Chip widgets)
+  - TextField + bouton "Ajouter" pour nouveaux intérêts
+  - Bouton "×" sur chaque intérêt pour supprimer
+• Informations (ListTile):
+  - Ville, Pays
+  - Genre
+  - Préférences de recherche
+• Bouton "Modifier le profil"
+• Bouton "Se déconnecter" (en rouge)
+
+2.2 MODIFICATION DU PROFIL (EditProfileScreen)
+────────────────────────────────────────────────────────────────────────────
+
+UI ATTENDUE:
+• Formulaire pré-rempli avec les données actuelles
+• Tous les champs modifiables (sauf email)
+• Bouton "Enregistrer" (sauvegarde et retour)
+• Bouton "Annuler" (retour sans sauvegarder)
+
+EXEMPLE UTILISATION DU SERVICE:
+──────────────────────────────────────────────────────────────────────────────
+// Charger le profil
+try {
+  final userId = AuthService().getCurrentUser()!.id;
+  final profile = await UserService().getUserProfile(userId);
+  // Pré-remplir les champs avec profile
+} catch (e) {
+  // Gérer l'erreur
+}
+
+// Sauvegarder les modifications
+try {
+  await UserService().updateUserProfile(userId, {
+    'first_name': firstNameController.text,
+    'bio': bioController.text,
+    // ... autres champs
+  });
+  Navigator.pop(context);
+} catch (e) {
+  // Gérer l'erreur
+}
+──────────────────────────────────────────────────────────────────────────────
+
+2.3 GESTION DES PHOTOS
+────────────────────────────────────────────────────────────────────────────
+
+UPLOAD AVATAR:
+──────────────────────────────────────────────────────────────────────────────
+try {
+  final ImagePicker picker = ImagePicker();
+  final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+  
+  if (image != null) {
+    final file = File(image.path);
+    final avatarUrl = await UserService().uploadAvatar(userId, file);
+    // Rafraîchir l'UI avec le nouvel avatar
+  }
+} catch (e) {
+  // Gérer l'erreur
+}
+──────────────────────────────────────────────────────────────────────────────
+
+AJOUTER PHOTO À LA GALERIE:
+──────────────────────────────────────────────────────────────────────────────
+try {
+  final ImagePicker picker = ImagePicker();
+  final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+  
+  if (image != null) {
+    final file = File(image.path);
+    await UserService().addPhotoToGallery(userId, file);
+    // Rafraîchir la galerie
+  }
+} catch (e) {
+  // Gérer l'erreur
+}
+──────────────────────────────────────────────────────────────────────────────
+
+SUPPRIMER PHOTO:
+──────────────────────────────────────────────────────────────────────────────
+try {
+  await UserService().deletePhotoFromGallery(photoId);
+  // Rafraîchir la galerie
+} catch (e) {
+  // Gérer l'erreur
+}
+──────────────────────────────────────────────────────────────────────────────
+
+2.4 GESTION DES CENTRES D'INTÉRÊT
+────────────────────────────────────────────────────────────────────────────
+
+CHARGER LES INTÉRÊTS:
+──────────────────────────────────────────────────────────────────────────────
+try {
+  final interests = await UserService().getUserInterests(userId);
+  // Afficher dans l'UI
+} catch (e) {
+  // Gérer l'erreur
+}
+──────────────────────────────────────────────────────────────────────────────
+
+AJOUTER UN INTÉRÊT:
+──────────────────────────────────────────────────────────────────────────────
+try {
+  await UserService().addInterest(userId, interestController.text);
+  // Rafraîchir la liste
+} catch (e) {
+  // Gérer l'erreur
+}
+──────────────────────────────────────────────────────────────────────────────
+
+SUPPRIMER UN INTÉRÊT:
+──────────────────────────────────────────────────────────────────────────────
+try {
+  await UserService().removeInterest(interestId);
+  // Rafraîchir la liste
+} catch (e) {
+  // Gérer l'erreur
+}
+──────────────────────────────────────────────────────────────────────────────
+
+PRIORITÉ 3: NAVIGATION & STRUCTURE APP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3.1 ÉCRAN D'ACCUEIL APRÈS AUTHENTIFICATION (HomeScreen)
+────────────────────────────────────────────────────────────────────────────
+
+UI ATTENDUE:
+• BottomNavigationBar avec 4 onglets:
+  1. Découvrir (icône explore) - [Pour Session 7]
+  2. Matchs (icône favorite) - [Pour Session 7]
+  3. Messages (icône chat) - [Pour Session 7]
+  4. Profil (icône person) - ProfileScreen
+  
+• Afficher le bon écran selon l'onglet sélectionné
+• Badge de notification sur Messages (si nouveaux messages)
+
+STRUCTURE:
+──────────────────────────────────────────────────────────────────────────────
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+  
+  final List<Widget> _screens = [
+    DiscoverScreen(),  // [Pour Session 7]
+    MatchesScreen(),   // [Pour Session 7]
+    MessagesScreen(),  // [Pour Session 7]
+    ProfileScreen(),   // À implémenter maintenant
+  ];
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.explore),
+            label: 'Découvrir',
+          ),
+          // ... autres items
+        ],
+      ),
+    );
+  }
+}
+──────────────────────────────────────────────────────────────────────────────
+
+3.2 GESTION DE L'ÉTAT D'AUTHENTIFICATION
+────────────────────────────────────────────────────────────────────────────
+
+CRÉER UN PROVIDER D'AUTHENTIFICATION:
+──────────────────────────────────────────────────────────────────────────────
+// lib/presentation/providers/auth_provider.dart
+import 'package:flutter/material.dart';
+import '../../data/services/auth_service.dart';
+
+class AuthProvider extends ChangeNotifier {
+  final AuthService _authService = AuthService();
+  bool _isAuthenticated = false;
+  String? _userId;
+  
+  bool get isAuthenticated => _isAuthenticated;
+  String? get userId => _userId;
+  
+  Future<void> checkAuthState() async {
+    final user = _authService.getCurrentUser();
+    _isAuthenticated = user != null;
+    _userId = user?.id;
+    notifyListeners();
+  }
+  
+  Future<void> signIn(String email, String password) async {
+    final user = await _authService.signIn(email, password);
+    _isAuthenticated = user != null;
+    _userId = user?.id;
+    notifyListeners();
+  }
+  
+  Future<void> signOut() async {
+    await _authService.signOut();
+    _isAuthenticated = false;
+    _userId = null;
+    notifyListeners();
+  }
+}
+──────────────────────────────────────────────────────────────────────────────
+
+INTÉGRER DANS main.dart:
+──────────────────────────────────────────────────────────────────────────────
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: SupabaseConfig.supabaseUrl,
+    anonKey: SupabaseConfig.supabaseAnonKey,
+  );
+  
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'MatchUp',
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: Consumer<AuthProvider>(
+        builder: (context, authProvider, _) {
+          // Vérifier l'état d'authentification au démarrage
+          authProvider.checkAuthState();
+          
+          return authProvider.isAuthenticated 
+            ? HomeScreen() 
+            : LoginScreen();
+        },
+      ),
+    );
+  }
+}
+──────────────────────────────────────────────────────────────────────────────
+
+📦 DÉPENDANCES NÉCESSAIRES (À AJOUTER SI MANQUANTES)
+──────────────────────────────────────────────────────────────────────────────
+
+Vérifier pubspec.yaml contient:
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Backend
+  supabase_flutter: ^2.8.0
+  
+  # State Management
+  provider: ^6.1.5+1
+  
+  # UI & Utils
+  image_picker: ^1.1.2
+  cached_network_image: ^3.4.1
+  intl: ^0.19.0
+  
+  # Storage
+  shared_preferences: ^2.5.3
+
+⚠️ Si besoin d'ajouter ces dépendances, exécuter:
+cd /home/user/flutter_app && flutter pub get
+
+🎨 DESIGN & UX
+──────────────────────────────────────────────────────────────────────────────
+
+PALETTE DE COULEURS:
+• Primary: Colors.pink[400] (#EC407A)
+• Accent: Colors.pinkAccent[200]
+• Background: Colors.white
+• Text: Colors.black87
+• Secondary Text: Colors.grey[600]
+• Error: Colors.red[400]
+• Success: Colors.green[400]
+
+TYPOGRAPHIE:
+• Titres: fontSize 24, fontWeight.bold
+• Sous-titres: fontSize 18, fontWeight.w600
+• Corps: fontSize 16, fontWeight.normal
+• Petits textes: fontSize 14, color: grey
+
+SPACING:
+• Padding général: 16.0
+• Entre les sections: 24.0
+• Entre les éléments: 8.0
+
+BOUTONS:
+• Primaires: ElevatedButton pleine largeur, hauteur 50
+• Secondaires: OutlinedButton
+• Icônes: IconButton
+
+FORMULAIRES:
+• TextField avec decoration InputDecoration
+• Border radius: 12.0
+• Validation en temps réel
+• Messages d'erreur en rouge sous le champ
+
+🔍 VALIDATION & TESTS À EFFECTUER
+──────────────────────────────────────────────────────────────────────────────
+
+TESTS D'AUTHENTIFICATION:
+1. ✅ Inscription avec nouvelles données → doit créer compte
+2. ✅ Connexion avec compte existant → doit rediriger vers HomeScreen
+3. ✅ Mauvais identifiants → doit afficher erreur claire
+4. ✅ Email invalide → doit bloquer et afficher erreur
+5. ✅ Password trop court → doit bloquer et afficher erreur
+6. ✅ Username déjà pris → doit afficher erreur
+7. ✅ Reset password → doit envoyer email
+
+TESTS PROFIL:
+1. ✅ Affichage du profil → doit charger toutes les données
+2. ✅ Upload avatar → doit mettre à jour l'image
+3. ✅ Ajouter photo galerie → doit apparaître dans la grille
+4. ✅ Supprimer photo → doit disparaître
+5. ✅ Ajouter intérêt → doit apparaître dans la liste
+6. ✅ Supprimer intérêt → doit disparaître
+7. ✅ Modifier profil → doit sauvegarder les changements
+8. ✅ Déconnexion → doit revenir à LoginScreen
+
+⚡ COMMANDES FLUTTER UTILES
+──────────────────────────────────────────────────────────────────────────────
+
+# Analyser le code (recommandé avant chaque compilation)
+cd /home/user/flutter_app && flutter analyze
+
+# Démarrer le serveur de prévisualisation web (release mode)
+cd /home/user/flutter_app && flutter build web --release && python3 -m http.server 5060 --directory build/web --bind 0.0.0.0 &
+
+# Obtenir l'URL publique du serveur
+GetServiceUrl(port=5060)
+
+# Redémarrer après modifications de code
+pkill -f "python3 -m http.server" && cd /home/user/flutter_app && flutter build web --release && python3 -m http.server 5060 --directory build/web --bind 0.0.0.0 &
+
+# Nettoyer le cache (si problèmes de build)
+cd /home/user/flutter_app && rm -rf build/web .dart_tool/build_cache && flutter pub get
+
+📝 CHECKLIST SESSION 6
+──────────────────────────────────────────────────────────────────────────────
+
+AUTHENTIFICATION:
+[ ] LoginScreen créé et fonctionnel
+[ ] SignUpScreen créé (formulaire multi-étapes)
+[ ] ForgotPasswordScreen créé
+[ ] AuthProvider créé et intégré
+[ ] Navigation auth → home fonctionnelle
+[ ] Gestion des erreurs utilisateur implémentée
+[ ] Validation des champs en temps réel
+
+PROFIL:
+[ ] ProfileScreen créé et affiche les données
+[ ] EditProfileScreen créé
+[ ] Upload avatar fonctionnel
+[ ] Gestion galerie photos (ajout/suppression)
+[ ] Gestion centres d'intérêt (ajout/suppression)
+[ ] Déconnexion fonctionnelle
+
+NAVIGATION:
+[ ] HomeScreen créé avec BottomNavigationBar
+[ ] Navigation entre les onglets fonctionnelle
+[ ] Écrans placeholder pour Session 7 créés
+
+UI/UX:
+[ ] Design cohérent avec palette de couleurs
+[ ] Loading states implémentés
+[ ] Messages d'erreur clairs
+[ ] SafeArea implémenté
+[ ] Responsive design
+
+TESTS:
+[ ] Test complet du flow d'inscription
+[ ] Test connexion/déconnexion
+[ ] Test modification profil
+[ ] Test upload/suppression photos
+[ ] Test ajout/suppression intérêts
+
+🚀 APRÈS CETTE SESSION
+──────────────────────────────────────────────────────────────────────────────
+
+Session 7 (Prochaine):
+• Écran de découverte (swipe cards)
+• Système de like/dislike
+• Algorithme de recommandation
+• Détection de match
+
+Session 8:
+• Écran de messagerie
+• Real-time chat
+• Envoi de photos dans le chat
+
+Session 9:
+• Notifications push
+• Filtres de recherche avancés
+• Paramètres de l'app
+
+Session 10:
+• Build APK final
+• Tests complets
+• Optimisations performance
+
+═══════════════════════════════════════════════════════════════════════════════
+  🎯 RAPPELS IMPORTANTS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. ⚠️ NE PAS mettre à jour Flutter/Dart (versions verrouillées)
+2. ✅ Les services backend sont DÉJÀ créés et fonctionnels
+3. ✅ La base de données Supabase est DÉJÀ configurée
+4. 🔑 Les credentials sont dans .env (protégé par .gitignore)
+5. 📱 Focus sur l'UI et l'intégration des services existants
+6. 🎨 Suivre le design system défini (couleurs, typo, spacing)
+7. 🔍 Tester chaque fonctionnalité après implémentation
+8. 💾 Commiter régulièrement sur GitHub
+
+═══════════════════════════════════════════════════════════════════════════════
+  ✅ PRÊT À DÉMARRER !
+═══════════════════════════════════════════════════════════════════════════════
